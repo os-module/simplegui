@@ -1,0 +1,15 @@
+[package]
+name = "riscv"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+virtio-drivers = {git = "https://github.com/rcore-os/virtio-drivers.git"}
+lazy_static = { version = "1.4", features = ["spin_no_std"] }
+tinybmp = "0.3.1"
+simplegui = {path = "../../../simplegui"}
+log = "0.4.14"
+embedded-graphics-core = "0.3.3"
+opensbi-rt = { git = "https://github.com/rcore-os/opensbi-rt.git", rev = "abdfeb72" }
