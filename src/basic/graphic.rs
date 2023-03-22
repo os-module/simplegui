@@ -32,15 +32,14 @@ impl DrawTarget for Graphics {
         I: IntoIterator<Item = embedded_graphics::Pixel<Self::Color>>,
     {
         pixels.into_iter().for_each(|px| {
-            // fb[idx] = px.1.b();
-            // fb[idx + 1] = px.1.g();
-            // fb[idx + 2] = px.1.r();
             let color = px.1.b() as u32 | (px.1.g() as u32) << 8 | (px.1.r() as u32) << 16;
             unsafe {
                 draw_point(self.point.x + px.0.x, self.point.y + px.0.y, color);
-                gpu_flush();
             }
         });
+        unsafe {
+            gpu_flush();
+        }
         Ok(())
     }
 }

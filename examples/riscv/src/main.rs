@@ -4,7 +4,6 @@
 extern crate alloc;
 extern crate opensbi_rt;
 
-use alloc::string::ToString;
 use core::{
     ptr::NonNull,
 };
@@ -13,7 +12,6 @@ use log::{info};
 use simplegui::UPIntrFreeCell;
 use core::any::Any;
 use alloc::sync::Arc;
-use alloc::vec;
 use tinybmp::Bmp;
 use virtio_drivers::device::gpu::VirtIOGpu;
 use virtio_drivers::transport::mmio::{MmioTransport, VirtIOHeader};
@@ -21,7 +19,10 @@ use virtio_drivers::transport::Transport;
 use alloc::vec::Vec;
 use crate::hal::HalImpl;
 use embedded_graphics_core::pixelcolor::Rgb888;
-use simplegui::basic::{Component, IconController};
+use embedded_graphics_core::prelude::{Point, Size};
+use simplegui::complex::desktop::Desktop;
+use simplegui::complex::terminal::GodTerminal;
+use simplegui::complex::snake::Snake;
 
 mod hal;
 
@@ -123,11 +124,22 @@ fn gpu_flush() {
     GPU_DEVICE.flush();
 }
 
+
+
 #[no_mangle]
 extern "C" fn main(_hartid: usize, _device_tree_paddr: usize) {
     log::set_max_level(log::LevelFilter::Info);
-    let icon = IconController::new(VIRTGPU_XRES as u32,VIRTGPU_YRES as u32,vec!["f1".to_string(),"f2".to_string()],None);
-    icon.paint();
+    // let icon = IconController::new(VIRTGPU_XRES as u32,VIRTGPU_YRES as u32,vec!["f1".to_string(),"f2".to_string()],None);
+    // icon.paint();
+
+    let desk = Desktop::new(VIRTGPU_XRES as u32,VIRTGPU_YRES as u32);
+    desk.paint();
+    let terminal = GodTerminal::new(Size::new(300,300),Point::new(100,100));
+    terminal.add_str("hello world");
+
+
+    let mut snake = Snake::new();
+    snake.run();
     loop {
     }
 }

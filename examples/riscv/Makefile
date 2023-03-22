@@ -17,7 +17,8 @@ qemu: kernel $(img)
 		-serial mon:stdio \
 		-bios default \
 		-kernel $(kernel) \
-		-global virtio-mmio.force-legacy=false \
+		-m 256M \
+		-global virtio-mmio.force-legacy=true \
 		-drive file=$(img),if=none,format=raw,id=x0 \
 		-device virtio-blk-device,drive=x0 \
 		-device virtio-gpu-device \

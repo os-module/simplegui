@@ -12,4 +12,7 @@ tinybmp = "0.3.1"
 simplegui = {path = "../../../simplegui"}
 log = "0.4.14"
 embedded-graphics-core = "0.3.3"
-opensbi-rt = { git = "https://github.com/rcore-os/opensbi-rt.git", rev = "abdfeb72" }
+
+buddy_system_allocator = "0.8.0"
+
+opensbi-rt = {path = "../riscv-sbi-rt" }
