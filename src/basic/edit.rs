@@ -41,7 +41,7 @@ impl TextEdit {
             inner: Mutex::new(TextEditInner {
                 text: String::new(),
                 font_color: Rgb888::BLACK,
-                graphic: Graphics { size, point },
+                graphic: Graphics::new(size,point),
                 parent,
                 base_component: Panel::new(size, point),
                 back_color: Rgb888::WHITE,

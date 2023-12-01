@@ -24,7 +24,7 @@ impl Panel {
         Self {
             inner: Mutex::new(PanelInner {
                 back_color: Rgb888::WHITE,
-                graphic: Graphics { size, point },
+                graphic: Graphics::new(size,point),
                 comps: VecDeque::new(),
             }),
         }

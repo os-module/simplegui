@@ -50,7 +50,7 @@ impl Bar {
     pub fn new(size: Size, point: Point, parent: Option<Arc<dyn Component>>) -> Self {
         Self {
             inner: Mutex::new(BarInner {
-                graphic: Graphics { size, point },
+                graphic: Graphics::new(size,point),
                 comps: VecDeque::new(),
                 parent,
             }),

@@ -3,14 +3,13 @@ use crate::Mutex;
 use alloc::collections::{BTreeSet, VecDeque};
 use alloc::string::ToString;
 use alloc::sync::Arc;
-use alloc::vec::Vec;
 use alloc::{format, vec};
-use core::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
+use core::sync::atomic::{AtomicU64, Ordering};
 use embedded_graphics::geometry::Size;
 use embedded_graphics::pixelcolor::Rgb888;
-use embedded_graphics::prelude::{PixelIteratorExt, Point, RgbColor};
-use lazy_static::lazy_static;
-use log::{error, info};
+use embedded_graphics::prelude::{Point, RgbColor};
+use log::{info};
+use spin::Lazy;
 use virtio_input_decoder::Key;
 
 #[derive(PartialOrd, PartialEq, Copy, Clone, Debug)]
@@ -56,10 +55,8 @@ const SCENE_SIZE: Size = Size::new(700, 600);
 const SCENE_POINT: Point = Point::new(200, 50);
 const SNAKE_DOT_SIZE: Size = Size::new(SNAKE_SIZE as u32, SNAKE_SIZE as u32);
 
-lazy_static! {
-    pub static ref SNAKE: Mutex<Option<Arc<Windows>>> =
-        unsafe { Mutex::new(None) };
-}
+pub static SNAKE: Lazy<Mutex<Option<Arc<Windows>>>> = Lazy::new(||Mutex::new(None)) ;
+
 
 impl Snake {
     fn any_point_to_center_point(point: Point) -> Point {
@@ -79,10 +76,10 @@ impl Snake {
     pub fn new() -> Self {
         let point = SCENE_POINT;
         let size = SCENE_SIZE;
-        let mut window = Windows::new(size + Size::new(0, 25), point);
+        let window = Windows::new(size + Size::new(0, 25), point);
         window.set_title("Snake").set_back_ground_color(SCENE_COLOR);
         //
-        let mut snake = [Point::new(200 + 350, 50 + 300); 2];
+        let snake = [Point::new(200 + 350, 50 + 300); 2];
         let mut point_set = BTreeSet::new();
         point_set.insert(snake[0]);
         *SNAKE.lock() = Some(window.clone());
@@ -136,7 +133,7 @@ impl Snake {
     pub fn run(&mut self) -> Status {
         self.draw_game_scene();
         let wait_time = (0.25 * 1e9 as f64) as u64;
-        let mut stamp = get_seed_from_rtc(); //当前时间戳
+        let mut stamp = get_seed(); //当前时间戳
         loop {
             if self.food.is_none() {
                 self.generate_food();
@@ -179,7 +176,7 @@ impl Snake {
             if self.status == Status::Wait {
                 continue;
             }
-            let current_stamp = get_seed_from_rtc();
+            let current_stamp = get_seed();
             if current_stamp - stamp >= wait_time {
                 self.key_event(Event::Keyboard(*self.snake_direction.back().unwrap()));
                 stamp = current_stamp;
@@ -192,27 +189,27 @@ impl Snake {
     }
     fn generate_food(&mut self) {
         //生成食物
-        let x_seed = get_seed_from_rtc();
+        let x_seed = get_seed();
         let mut x = oorandom::Rand32::new(x_seed).rand_u32() % 700;
-        let y_seed = get_seed_from_rtc();
+        let y_seed = get_seed();
         let mut y = oorandom::Rand32::new(y_seed).rand_u32() % 600;
         loop {
             if x >= 10 && x <= 690 && y >= 10 && y <= 590 {
                 let point = Point::new(200 + x as i32, 50 + y as i32);
                 let point = Snake::any_point_to_center_point(point);
                 if self.point_set.contains(&point) {
-                    let x_seed = get_seed_from_rtc();
+                    let x_seed = get_seed();
                     x = oorandom::Rand32::new(x_seed).rand_u32() % 700;
-                    let y_seed = get_seed_from_rtc();
+                    let y_seed = get_seed();
                     y = oorandom::Rand32::new(y_seed).rand_u32() % 600;
                 } else {
                     self.food = Some(point);
                     break;
                 }
             } else {
-                let x_seed = get_seed_from_rtc();
+                let x_seed = get_seed();
                 x = oorandom::Rand32::new(x_seed).rand_u32() % 700;
-                let y_seed = get_seed_from_rtc();
+                let y_seed = get_seed();
                 y = oorandom::Rand32::new(y_seed).rand_u32() % 600;
             }
         }
@@ -312,11 +309,11 @@ impl Snake {
             }
         }
     }
-    fn update(&mut self, event: Event) {}
+    fn update(&mut self, _event: Event) {}
 }
 
 static SEED: AtomicU64 = AtomicU64::new(0);
 /// generate seed from qemu rtc
-pub fn get_seed_from_rtc() -> u64 {
+pub fn get_seed() -> u64 {
     SEED.fetch_add(1, Ordering::SeqCst)
 }

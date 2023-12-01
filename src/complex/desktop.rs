@@ -74,15 +74,15 @@ impl Desktop {
     }
 }
 
-pub fn create_desktop(x: usize, y: usize) -> isize {
+pub fn create_desktop(_x: usize, _y: usize) -> isize {
     // create_windows();
     create_god_terminal();
-    6
+    0
 }
 
 pub fn create_god_terminal() {
     info!("create god terminal");
-    let god_terminal = GodTerminal::new(Size::new(500, 500), Point::new(400, 100));
+    let _god_terminal = GodTerminal::new(Size::new(500, 500), Point::new(400, 100));
 }
 
 pub fn create_windows() {

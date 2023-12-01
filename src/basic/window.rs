@@ -4,7 +4,7 @@ use crate::Mutex;
 use alloc::collections::VecDeque;
 use alloc::string::{String, ToString};
 use alloc::sync::Arc;
-use alloc::vec::Vec;
+
 use embedded_graphics::geometry::{Point, Size};
 use embedded_graphics::mono_font::ascii::FONT_10X20;
 use embedded_graphics::mono_font::MonoTextStyle;
@@ -76,7 +76,7 @@ impl Windows {
 
         let window = Arc::new(Self {
             id: 0,
-            inner: unsafe {
+            inner:
                 Mutex::new(WindowsInner {
                     event: VecDeque::new(),
                     name: "".to_string(),
@@ -86,11 +86,11 @@ impl Windows {
                         v.push_back(windows.clone());
                         v
                     },
-                    graphic: Graphics { size, point },
+                    graphic: Graphics::new(size,point),
                     panel: windows.clone(),
                 })
             },
-        });
+        );
         let mut screen = SCREEN_MANAGER.lock();
         screen.update(
             bar_size + Size::new(0, size.height),
@@ -108,7 +108,7 @@ impl Windows {
         self
     }
     pub fn set_back_ground_color(&self, color: Rgb888) -> &Self {
-        let mut inner = self.inner.lock();
+        let inner = self.inner.lock();
         inner.panel.set_background_color(color);
         self
     }

@@ -2,11 +2,10 @@ use crate::basic::{Component, Windows};
 use alloc::boxed::Box;
 use alloc::collections::BTreeMap;
 use alloc::sync::Arc;
-use core::cell::RefCell;
+
 use embedded_graphics::prelude::{Point, Size};
-use lazy_static::lazy_static;
-use log::info;
-use spin::Mutex;
+
+use spin::{Lazy, Mutex};
 
 const VIRTGPU_XRES: usize = 1280;
 const VIRTGPU_YRES: usize = 800;
@@ -15,23 +14,21 @@ pub struct Screen {
     inner: Mutex<ScreenInner>,
 }
 pub struct ScreenInner {
-    flag: Box<[[usize; VIRTGPU_XRES as usize]; VIRTGPU_YRES as usize]>,
+    flag: Box<[[usize; VIRTGPU_XRES]; VIRTGPU_YRES]>,
     windows: BTreeMap<usize, Arc<Windows>>,
 }
 
-lazy_static! {
-    pub static ref SCREEN_MANAGER: Mutex<Screen> =
-        unsafe { Mutex::new(Screen::new()) };
-}
+pub static SCREEN_MANAGER: Lazy<Mutex<Screen>> = Lazy::new(||Mutex::new(Screen::new())) ;
+
 impl Screen {
     pub fn new() -> Self {
         Self {
-            inner: unsafe {
+            inner:
                 Mutex::new(ScreenInner {
-                    flag: Box::new([[0; VIRTGPU_XRES as usize]; VIRTGPU_YRES as usize]),
+                    flag: Box::new([[0; VIRTGPU_XRES ]; VIRTGPU_YRES]),
                     windows: BTreeMap::new(),
                 })
-            },
+            ,
         }
     }
     pub fn update(&mut self, size: Size, point: Point, window: Arc<Windows>) {

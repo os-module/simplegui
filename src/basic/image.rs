@@ -32,7 +32,7 @@ impl ImageComp {
             inner: Mutex::new(ImageInner {
                 parent,
                 image: v,
-                graphic: Graphics { size, point },
+                graphic: Graphics::new(size,point),
             }),
         }
     }

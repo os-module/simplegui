@@ -38,7 +38,7 @@ impl Terminal {
             inner: Mutex::new(TerminalInner {
                 text,
                 title,
-                graphic: Graphics { size, point },
+                graphic: Graphics::new(size,point),
                 comps: VecDeque::new(),
             }),
         }

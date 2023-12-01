@@ -2,17 +2,23 @@
 #![allow(unused)]
 extern crate alloc;
 
+use alloc::sync::Arc;
 use core::any::Any;
-use core::ops::{Deref, DerefMut};
-use spin::{Mutex, MutexGuard};
+
+use spin::{Mutex, Once};
 
 pub mod basic;
 pub mod complex;
 
 
 pub trait GPUDevice: Send + Sync + Any {
-    fn update_cursor(&self);
-    fn get_frame_buffer(&self) -> &mut [u8];
     fn flush(&self);
-    fn get_resolution(&self) -> (u32, u32);
+    fn draw_point(&mut self, x: i32, y: i32, color: u32);
+}
+
+
+pub static GPU_DEVICE:Once<Arc<Mutex<dyn GPUDevice>>> = Once::new();
+
+pub fn init_gpu(gpu:Arc<Mutex<dyn GPUDevice>>) {
+    GPU_DEVICE.call_once(||gpu);
 }

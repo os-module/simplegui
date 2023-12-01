@@ -4,7 +4,7 @@ use alloc::sync::Arc;
 use embedded_graphics::geometry::Size;
 use embedded_graphics::pixelcolor::Rgb888;
 use embedded_graphics::prelude::{Point, RgbColor};
-use log::info;
+
 
 pub struct GodTerminal {
     inner: Mutex<GodTerminalInner>,
@@ -26,7 +26,7 @@ impl GodTerminal {
         windows.paint();
         text_edit.repaint();
         Self {
-            inner: unsafe { Mutex::new(GodTerminalInner { text_edit, windows }) },
+            inner:  Mutex::new(GodTerminalInner { text_edit, windows }) ,
         }
     }
     pub fn add_str(&self, str: &str) -> &Self {

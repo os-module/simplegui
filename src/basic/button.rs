@@ -35,7 +35,7 @@ impl Button {
         };
         Self {
             inner: Mutex::new(ButtonInner {
-                graphic: Graphics { size, point },
+                graphic: Graphics::new(size,point),
                 text,
                 parent,
             }),

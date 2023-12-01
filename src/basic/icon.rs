@@ -29,10 +29,7 @@ impl IconController {
         IconController {
             inner: Mutex::new(IconControllerInner {
                 files,
-                graphic: Graphics {
-                    size: Size::new(x, y),
-                    point: Point::new(0, 0),
-                },
+                graphic:Graphics::new(Size::new(x, y),Point::new(0,0)),
                 parent,
             }),
         }
